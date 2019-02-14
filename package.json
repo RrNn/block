@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "normal": "DEBUG=block:* npm start",
-    "heroku-postbuild": "db-migrate down && db-migrate up"
+    "heroku-postbuild": "db-migrate reset && db-migrate up"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -15,8 +15,10 @@
     "debug": "~2.6.9",
     "dotenv": "^6.2.0",
     "express": "~4.16.0",
+    "googleapis": "^37.2.0",
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
+    "nodemailer": "^5.1.1",
     "pg-promise": "^8.5.5",
     "pug": "2.0.0-beta11"
   },

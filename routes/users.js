@@ -1,14 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource', req, res, next);
-});
 
 // this is the user object that
 // will be used for all routes that need it.
 user = new User();
+
+
+router.get('/', function(req, res, next) {
+  User.all()
+    .then((data) => {
+      res.json({ data: data });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.json({ Error: error });
+    });
+});
+
 
 router.post('/register', (req, res, next) => {
   user
@@ -35,5 +44,16 @@ router.put('/edit', (req, res, next) => {
       res.json({ message: error });
     });
 });
+
+router.get('/*',(req,res,next)=>{
+  // Pass the sha to the emailVerified method on the user.
+   User.verifyEmail(req.url.replace('/',''))
+   .then(resp=>{
+    res.send(resp)
+   })
+   .catch(error=>{
+    res.send(error)
+   })
+})
 
 module.exports = router;

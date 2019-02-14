@@ -45,16 +45,16 @@ exports.up = function(db, callback) {
         unique: true,
         notNull: true,
       },
-      initial_amount: {
-        type: 'int',
-        notNull: true,
-      },
       email: {
         type: 'string',
         length: 50,
         unique: true,
         notNull: false,
       },
+      verified:{
+        type:'string',
+        length:150,
+      }
     },
     (error) => {
       if (error) return callback(error);
