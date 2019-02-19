@@ -1,0 +1,51 @@
+{
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "BASE_URL": {
+      "required": true
+    },
+    "DATABASE": {
+      "required": true
+    },
+    "DB_PASSWORD": {
+      "required": true
+    },
+    "DB_PORT": {
+      "required": true
+    },
+    "GOOGLE_OATH2_CLIENT_ID": {
+      "required": true
+    },
+    "GOOGLE_OATH2_CLIENT_SECRET": {
+      "required": true
+    },
+    "GOOGLE_OATH2_REDIRECT_URI": {
+      "required": true
+    },
+    "GOOGLE_OATH2_REFRESH_TOKEN": {
+      "required": true
+    },
+    "HOST": {
+      "required": true
+    },
+    "USER": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "block",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
