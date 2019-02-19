@@ -126,6 +126,10 @@ class User {
   static async login(email,password){
     try {
       user = await db.query(`select * from users where email='${email}'`)
+
+      if(user.length === 0) return { message:'User does not exist' };
+      if(user[0].verified != 'true') return { message:'Your email is not verified' };
+      
       const response = await bcrypt.compare(password, user[0].password)
 
       // We delete the password on the user object because we dont want to
