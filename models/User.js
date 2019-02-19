@@ -1,6 +1,6 @@
 const db = require('../config/database');
 const helpers = require('./helpers');
-
+const bcrypt = require('bcrypt');
 
 
 console.log('DATABASE OBJECT:', db);
@@ -10,7 +10,16 @@ class User {
     // this.all = this.all;
   }
   static all() {
-    const query = db.query(`select * from users`);
+    const query = db.query(`select 
+      id,
+      referrer_user_id,
+      full_name,
+      origin,
+      dob,
+      contact,
+      email,
+      verified
+      from users`);
     // this returns a promise
     return query.then((data) => data).catch((error) => {
       console.error(error);
@@ -73,7 +82,6 @@ class User {
   }
 
   async edit(data) {
-    console.log(data)
     // check if the user we are editing exists.
     const userAvailable = await helpers.userExists(data.id);
     if (!userAvailable) return { error: 'User does not exist', name: 'error' };
@@ -96,17 +104,58 @@ class User {
       });
   }
 
+  async setPassword(userData){
+    try {
+      // Check for user existence before updating the password
+      const data = await db.query(`select * from users where id=${userData.user_id}`)
+      if(data.length === 0) return { message: 'User not found' };
+      if(data[0].verified != 'true') return { message:'Your email is not verified' };
+      // hash the password.
+      const hash = await bcrypt.hash(userData.password,10)
+      // Update the password fiedl for the the user.
+      const resp = await db.query(`update users set password='${hash}' where id=${userData.user_id} returning *`)
+      if(resp.length > 0) return { message: 'Password set sucessfully' }
+      return { message: 'Something went wrong and password wasnt updated' }
+      
+    } catch(error) {
+      console.error('SET_PASSWORD_ERROR',error);
+      return { message: 'Something went wrong and password wasnt updated' }
+    }
+  }
+
+  static async login(email,password){
+    try {
+      user = await db.query(`select * from users where email='${email}'`)
+      const response = await bcrypt.compare(password, user[0].password)
+
+      // We delete the password on the user object because we dont want to
+      // return in. We also dont want to use it to generate the JWT token.
+      delete user[0].password
+
+      // Prepare the JSON object to return.
+      const resp = {
+        message: 'Login successful',
+        token: await helpers.generateJwtToken(user[0]),
+        user: user[0]
+      }
+      return response ? resp : { message:'Invalid login credentials' }
+      
+    } catch(error) {
+      console.error('LOGIN_ERROR',error)
+      return { message:'Invalid login credentials' }
+    } 
+  }
+
   static verifyEmail(sha){
-    return db.query(`update users set verified='true' where verified='${sha}' returning *`,[true, 1111])
+    return db.query(`update users set verified=true where verified='${sha}' returning *`,[true, 1111])
     .then(data=>{
-      console.log(data)
       return data.length === 0 ?
        {error:`Your email has not been verified. Either it's verified already or the link you clicked on is broken`} : 
        {success:'Email has been verified'}
     })
     .catch(error=>{
-      console.error(error)
-      return {error:'AN error occured'}
+      console.error('VERIFY_EMAIL_ERROR',error)
+      return {error:'An error occured'}
     })
   }
 
