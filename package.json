@@ -9,6 +9,7 @@
     "heroku-postbuild": "db-migrate reset && db-migrate up"
   },
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "cookie-parser": "~1.4.3",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.4.0",
@@ -17,6 +18,7 @@
     "express": "~4.16.0",
     "googleapis": "^37.2.0",
     "http-errors": "~1.6.2",
+    "jsonwebtoken": "^8.4.0",
     "morgan": "~1.9.0",
     "nodemailer": "^5.1.1",
     "pg-promise": "^8.5.5",

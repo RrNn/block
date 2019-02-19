@@ -5,6 +5,9 @@ const nodemailer = require('nodemailer');
 const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 
+// Generation of JWT Tokens
+var jwt = require('jsonwebtoken');
+
 /*
   Check whther the user exists.
  */
@@ -44,8 +47,14 @@ async function referralMax(referrer_id) {
   }
 }
 
-// Function tha is used to send emails.
-  async function mailer(receiver_email,user_name,secret_sha=''){
+
+async function generateJwtToken(dataObject){
+  const token = await jwt.sign(dataObject,process.env.JWT_CERT,{ expiresIn: '24h' });
+  return token;
+}
+
+// Function that is used to send emails.
+async function mailer(receiver_email,user_name,secret_sha=''){
     
     const oauth2Client = new OAuth2(
      process.env.GOOGLE_OATH2_CLIENT_ID, // ClientID
@@ -106,11 +115,19 @@ async function referralMax(referrer_id) {
     };
 
     smtpTransport.sendMail(mailOptions, (error, response) => {
-     error ? console.log('ERROR!',error) : console.log('SUCCESS!',response);
+     error ? console.log('EMAIL_SEND_ERROR',error) : console.log('EMAIL_SEND_SUCCESS',response);
      smtpTransport.close();
     });
   }
 
-module.exports.userExists = userExists;
-module.exports.referralMax = referralMax;
-module.exports.mailer = mailer;
+
+module.exports = {
+  userExists,
+  referralMax,
+  mailer,
+  generateJwtToken
+}
+
+
+
+

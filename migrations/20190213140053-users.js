@@ -49,7 +49,12 @@ exports.up = function(db, callback) {
         type: 'string',
         length: 50,
         unique: true,
-        notNull: false,
+        notNull: true,
+      },
+      password:{
+        type:'string',
+        notNull:false,
+        length:200
       },
       verified:{
         type:'string',
