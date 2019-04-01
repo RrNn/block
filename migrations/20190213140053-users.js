@@ -23,10 +23,10 @@ exports.up = function(db, callback) {
         primaryKey: true,
         autoIncrement: true,
       },
-      referrer_user_id: {
-        type: 'int',
-        notNull: false,
-      },
+      // referrer_user_id: {
+      //   type: 'int',
+      //   notNull: false,
+      // },
       full_name: {
         type: 'string',
         length: 40,
@@ -51,11 +51,11 @@ exports.up = function(db, callback) {
         unique: true,
         notNull: true,
       },
-      password:{
-        type:'string',
-        notNull:false,
-        length:200
-      },
+      // password:{
+      //   type:'string',
+      //   notNull:false,
+      //   length:200
+      // },
       verified:{
         type:'string',
         length:150,
