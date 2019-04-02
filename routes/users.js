@@ -58,7 +58,7 @@ router.post("/setpassword", (req, res, next) => {
 router.post("/login", (req, res, next) => {
   User.login(req.body.email, req.body.password)
     .then(resp => {
-      res.send(resp);
+      res.json(resp);
     })
     .catch(error => {
       console.log(error);
@@ -69,10 +69,10 @@ router.get("/*", (req, res, next) => {
   // Pass the sha to the emailVerified method on the user.
   User.verifyEmail(req.url.replace("/", ""))
     .then(resp => {
-      res.send(resp);
+      res.json(resp);
     })
     .catch(error => {
-      res.send(error);
+      res.json(error);
     });
 });
 

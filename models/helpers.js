@@ -26,6 +26,7 @@ async function userExists(id) {
     return e;
   }
 }
+
 /*
   Check whether the user has reached their max referrals of 4
   people
@@ -37,7 +38,7 @@ async function referralMax(referrer_id) {
   if (referrer_id === undefined) return 0;
   try {
     const users = await db.any(
-      `select * from users where referrer_user_id=${referrer_id}`,
+      `select * from user_refs where referrer_user_id=${referrer_id}`,
       [true]
     );
     return users.length;
@@ -125,7 +126,7 @@ module.exports = {
   userExists,
   referralMax,
   mailer,
-  generateJwtToken
+  generateJwtToken,
 }
 
 
