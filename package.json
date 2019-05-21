@@ -6,10 +6,11 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "normal": "DEBUG=block:* npm start",
+    "test": "mocha \"tests/**/*.test.js\"",
     "heroku-postbuild": "db-migrate reset && db-migrate up"
   },
   "dependencies": {
-    "bcrypt": "^3.0.4",
+    "bcrypt": "^3.0.6",
     "cookie-parser": "~1.4.3",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.4.0",
@@ -20,11 +21,17 @@
     "http-errors": "~1.6.2",
     "jsonwebtoken": "^8.4.0",
     "morgan": "~1.9.0",
+    "nock": "^10.0.6",
+    "node-pre-gyp": "^0.13.0",
     "nodemailer": "^5.1.1",
     "pg-promise": "^8.5.5",
     "pug": "2.0.0-beta11"
   },
   "engines": {
     "node": "10.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4",
+    "supertest": "^4.0.2"
   }
 }

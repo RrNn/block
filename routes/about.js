@@ -1,3 +1,6 @@
+/*
+ * this file is not so important in the app, just for a few references
+ */
 const express = require('express');
 const router = express.Router();
 

@@ -2,7 +2,7 @@ const db = require('../config/database');
 
 // mailing packages
 const nodemailer = require('nodemailer');
-const { google } = require("googleapis");
+const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 
 // Generation of JWT Tokens
@@ -48,39 +48,41 @@ async function referralMax(referrer_id) {
   }
 }
 
-
-async function generateJwtToken(dataObject){
-  const token = await jwt.sign(dataObject,process.env.JWT_CERT,{ expiresIn: '24h' });
+async function generateJwtToken(dataObject) {
+  const token = await jwt.sign(dataObject, process.env.JWT_CERT, {
+    expiresIn: '24h',
+  });
   return token;
 }
 
 // Function that is used to send emails.
-async function mailer(receiver_email,user_name,secret_sha=''){
-    
-    const oauth2Client = new OAuth2(
-     process.env.GOOGLE_OATH2_CLIENT_ID, // ClientID
-     process.env.GOOGLE_OATH2_CLIENT_SECRET, // Client Secret
-     process.env.GOOGLE_OATH2_REDIRECT_URI // Redirect URL
-    );
-    oauth2Client.setCredentials({refresh_token: process.env.GOOGLE_OATH2_REFRESH_TOKEN});
-    const tokens = await oauth2Client.refreshAccessToken()
-    // get the access token, expires in about 3000ms
-    const accessToken = tokens.credentials.access_token
-    
-    const smtpTransport = nodemailer.createTransport({
-     service: 'gmail',
-     auth: {
-          type: 'OAuth2',
-          user: 'nabaasarichard@gmail.com', 
-          clientId: process.env.GOOGLE_OATH2_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_OATH2_CLIENT_SECRET,
-          refreshToken: process.env.GOOGLE_OATH2_REFRESH_TOKEN,
-          accessToken: accessToken
-     }
-    });
-    
-    // The html content of the email.
-    const mailContent = `
+async function mailer(receiver_email, user_name, secret_sha = '') {
+  const oauth2Client = new OAuth2(
+    process.env.GOOGLE_OATH2_CLIENT_ID, // ClientID
+    process.env.GOOGLE_OATH2_CLIENT_SECRET, // Client Secret
+    process.env.GOOGLE_OATH2_REDIRECT_URI // Redirect URL
+  );
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_OATH2_REFRESH_TOKEN,
+  });
+  const tokens = await oauth2Client.refreshAccessToken();
+  // get the access token, expires in about 3000ms
+  const accessToken = tokens.credentials.access_token;
+
+  const smtpTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      type: 'OAuth2',
+      user: 'nabaasarichard@gmail.com',
+      clientId: process.env.GOOGLE_OATH2_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OATH2_CLIENT_SECRET,
+      refreshToken: process.env.GOOGLE_OATH2_REFRESH_TOKEN,
+      accessToken: accessToken,
+    },
+  });
+
+  // The html content of the email.
+  const mailContent = `
     <head>
       <style type="text/css">
         @import url('https://fonts.googleapis.com/css?family=Open+Sans:300i')
@@ -101,34 +103,33 @@ async function mailer(receiver_email,user_name,secret_sha=''){
           padding-left: 2%;">
             <p>Thanks for signing up ${user_name}. You're welcome.</p>
             <p>Please click the link below to confirm your email address</p>
-          <a href="${process.env.BASE_URL}/users/${secret_sha}">Click here to verify your email addrress.</a>
+          <a href="${
+            process.env.BASE_URL
+          }/users/${secret_sha}">Click here to verify your email addrress.</a>
         </div>
       </div>
     </body>
-    `
+    `;
 
-    const mailOptions = {
-     from: '"Multi Level Marketing" <nabaasarichard@gmail.com>',
-     to: receiver_email,
-     subject: "Welcome to Block-i",
-     generateTextFromHTML: true,
-     html: mailContent
-    };
+  const mailOptions = {
+    from: '"Multi Level Marketing" <nabaasarichard@gmail.com>',
+    to: receiver_email,
+    subject: 'Welcome to Block-i',
+    generateTextFromHTML: true,
+    html: mailContent,
+  };
 
-    smtpTransport.sendMail(mailOptions, (error, response) => {
-     error ? console.log('EMAIL_SEND_ERROR',error) : console.log('EMAIL_SEND_SUCCESS',response);
-     smtpTransport.close();
-    });
-  }
-
+  smtpTransport.sendMail(mailOptions, (error, response) => {
+    error
+      ? console.error('EMAIL_SEND_ERROR', error)
+      : console.log('EMAIL_SEND_SUCCESS', response);
+    smtpTransport.close();
+  });
+}
 
 module.exports = {
   userExists,
   referralMax,
   mailer,
   generateJwtToken,
-}
-
-
-
-
+};
