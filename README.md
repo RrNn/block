@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/RrNn/block.svg?branch=develop)](https://travis-ci.com/RrNn/block)
+
 ### Multi-Level Block Marketing.
 
 #### Requirements.
