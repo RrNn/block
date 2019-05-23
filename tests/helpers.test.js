@@ -3,37 +3,11 @@ const app = require('../app');
 const assert = require('assert');
 const helpers = require('../models/helpers');
 const db = require('../config/database');
+const setUp = require('./setupTests');
 
-console.log('+++++++++++++++', process.env.NODE_ENV);
-
-// console.log(assert);
-// before(function(done) {
-//   console.log('THE_ENVIRONMENT', process.env.NODE_ENV);
-//   eval('db-migrate up');
-
-//   done();
-// });
 describe('Test the referralMax method', () => {
-  // beforeEach(async () => {
-  //   const result = await eval('db-migrate up');
-  //   console.log('MIGRATED', result);
-  // });
-  // afterEach(() => {
-  //   // eval('db-migrate down');
-  // });
-  // before(async function(done) {
-  //   try {
-  //     const result = await eval('db-migrate reset && db-migrate up');
-  //     console.log('MIGRATED', result);
-  //   } catch (e) {
-  //     console.log('ERROR__:', e);
-  //   }
-
-  //   done();
-  // });
   it('should return 0 if the refferer_user_id is not passed', async () => {
     const resp = await helpers.referralMax();
-    console.log('RESP_ONE', resp);
     assert.equal(resp, 0);
   });
 
@@ -46,7 +20,23 @@ describe('Test the referralMax method', () => {
      */
 
     const resp = await helpers.referralMax(1);
-    console.log('RESP_TWO', resp);
-    assert.equal(resp, 4);
+    assert.equal(resp, 0);
+  });
+  it('checks whether the use exists', async () => {
+    // here we expect to get a false on the first assertion and a true on the next assertion
+    // because the function return true if no user_id is passed along
+    const userOneExists = await helpers.userExists(1);
+    const userTwoExists = await helpers.userExists();
+    assert.equal(userOneExists, false);
+    assert.equal(userTwoExists, true);
+  });
+  it('returns true if the user exists [ Truly ]', async () => {
+    // create the user to use
+    const result = await setUp.db.query(
+      `insert into users (full_name,origin,dob,contact,email,verified) values ('Peter Drury','UK','12-06-1990','0789574631','peter@drury.org','true') returning id`
+    );
+
+    const userTrulyExists = await helpers.userExists(result[0].id);
+    assert.equal(userTrulyExists, true);
   });
 });

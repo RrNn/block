@@ -2,6 +2,11 @@ language: node_js
 
 node_js:
   - '11.1.0'
+before_script:
+  - psql -c 'create database block_testing;' -U postgres
 
 script:
   - npm test
+
+services:
+  - postgresql

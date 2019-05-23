@@ -1,10 +1,10 @@
 {
   "dev": {
-    "driver": "postgres",
-    "host": "localhost",
-    "port": 5432,
-    "user": "postgres",
-    "password": "",
-    "database": "block"
+    "driver": { "ENV": "DATABASE_DRIVER" },
+    "host": { "ENV": "HOST" },
+    "port": { "ENV": "DB_PORT" },
+    "user": { "ENV": "USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "database": { "ENV": "DATABASE" }
   }
 }

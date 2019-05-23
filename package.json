@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "normal": "DEBUG=block:* npm start",
-    "test": "mocha \"tests/**/*.test.js\"",
+    "test": "db-migrate reset --config tests/testing_database_config.json && db-migrate up --config tests/testing_database_config.json && cross-env NODE_ENV=testing mocha \"tests/**/*.test.js\"",
     "heroku-postbuild": "db-migrate reset && db-migrate up"
   },
   "dependencies": {
@@ -25,12 +25,13 @@
     "node-pre-gyp": "^0.13.0",
     "nodemailer": "^5.1.1",
     "pg-promise": "^8.5.5",
-    "pug": "2.0.0-beta11"
+    "pug": "^2.0.3"
   },
   "engines": {
     "node": "10.4.0"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "mocha": "^6.1.4",
     "supertest": "^4.0.2"
   }
