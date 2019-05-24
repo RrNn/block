@@ -1,6 +1,6 @@
-const db = require("../config/database");
-const helpers = require("./helpers");
-const bcrypt = require("bcrypt");
+const db = require('../config/database');
+const helpers = require('./helpers');
+const bcrypt = require('bcrypt');
 
 // console.log('DATABASE OBJECT:', db);
 
@@ -20,8 +20,16 @@ class User {
       from users`);
     // this returns a promise
     return query
-      .then(data => data)
-      .catch(error => {
+      .then((data) => {
+        // remove the hash from @ datum before returning it
+        // because its supposed to be secret. Only used
+        // when verifying a users email.
+        data.forEach((datum) => {
+          datum.verified = datum.verified === 'true' ? true : false;
+        });
+        return data;
+      })
+      .catch((error) => {
         console.error(error);
         return error;
       });
@@ -29,14 +37,14 @@ class User {
 
   async register(data) {
     // Generate a random string for verifying the email later
-    let randomStr = "";
+    let randomStr = '';
     for (let i = 1; i < 10; i++) {
       randomStr =
         randomStr +
-        "" +
+        '' +
         Math.random()
           .toString(36)
-          .replace("0.", "");
+          .replace('0.', '');
     }
     // Add the random string to the data object that is sent by the user.
     data.verified = randomStr;
@@ -61,7 +69,7 @@ class User {
 
     const dataValues = Object.values(data);
 
-    let values = "";
+    let values = '';
 
     for (let value in dataValues) {
       dataValues[value] === dataValues[dataValues.length - 1]
@@ -77,7 +85,7 @@ class User {
       return {
         message: `Maximum of 4 people already reached by ${
           data.full_name
-        }'s referrer`
+        }'s referrer`,
       };
 
     try {
@@ -108,35 +116,34 @@ class User {
     } catch (error) {
       console.error(error);
 
-      const errText = `The${error.detail.replace(/\(|\)|(Key)/gi, "")}`;
+      const errText = `The${error.detail.replace(/\(|\)|(Key)/gi, '')}`;
 
-      return errText.replace("=", " ");
+      return errText.replace('=', ' ');
     }
   }
 
   async edit(data) {
-    console.log(data);
     // check if the user we are editing exists.
     const userAvailable = await helpers.userExists(data.id);
 
-    if (!userAvailable) return { error: "User does not exist", name: "error" };
+    if (!userAvailable) return { error: 'User does not exist', name: 'error' };
 
     let fields = [];
 
     for (let datum in data) {
-      if (datum == "id") continue;
+      if (datum == 'id') continue;
 
       fields.push(datum + "='" + data[datum] + "'");
     }
 
     return db
-      .query(`update users set ${"".concat(fields)} where id=${data.id}`)
-      .then(resp => "Successfully edited")
-      .catch(error => {
+      .query(`update users set ${''.concat(fields)} where id=${data.id}`)
+      .then((resp) => 'Successfully edited')
+      .catch((error) => {
         console.error(error);
         const errText = error.detail
-          ? `The${error.detail.replace(/\(|\)|(Key)/gi, "")}`
-          : "An error occured!";
+          ? `The${error.detail.replace(/\(|\)|(Key)/gi, '')}`
+          : 'An error occured!';
         return errText;
       });
   }
@@ -147,9 +154,9 @@ class User {
       const data = await db.query(
         `select * from users where id=${userData.user_id}`
       );
-      if (data.length === 0) return { message: "User not found" };
-      if (data[0].verified != "true")
-        return { message: "Your email is not verified" };
+      if (data.length === 0) return { message: 'User not found' };
+      if (data[0].verified != 'true')
+        return { message: 'Your email is not verified' };
       // hash the password.
       const hash = await bcrypt.hash(userData.password, 10);
       // Insert the password and user id in the passwords table.
@@ -159,11 +166,11 @@ class User {
         }','${hash}')`
       );
 
-      if (Array.isArray(resp)) return { message: "Password set sucessfully" };
-      return { message: "Something went wrong and password wasnt updated" };
+      if (Array.isArray(resp)) return { message: 'Password set sucessfully' };
+      return { message: 'Something went wrong and password wasnt updated' };
     } catch (error) {
-      console.error("SET_PASSWORD_ERROR", error);
-      return { message: "Something went wrong and password wasnt updated" };
+      console.error('SET_PASSWORD_ERROR', error);
+      return { message: 'Something went wrong and password wasnt updated' };
     }
   }
 
@@ -172,17 +179,17 @@ class User {
       // check whether the user exisst in the users table
       user = await db.query(`select * from users where email='${email}'`);
       // No user ? then return immediatel with the message
-      if (user.length === 0) return { message: "User does not exist" };
+      if (user.length === 0) return { message: 'User does not exist' };
       // Email not verified ? then return immediately with the message.
-      if (user[0].verified != "true")
-        return { message: "Your email is not verified" };
+      if (user[0].verified != 'true')
+        return { message: 'Your email is not verified' };
       // All good ? check the passwords table for the user id and get the hashed password.
       const checkUserPassword = await db.query(
         `select password from passwords where user_id = ${user[0].id}`
       );
       // User not found in the passowrds table ? then return immediately.
       if (checkUserPassword.length === 0)
-        return { message: "User has not set the password yet" };
+        return { message: 'User has not set the password yet' };
       // Carry on, if all is good. Check the hashed password.
       const response = await bcrypt.compare(
         password,
@@ -195,15 +202,15 @@ class User {
 
       // Prepare the JSON object to return.
       const resp = {
-        message: "Login successful",
+        message: 'Login successful',
         token: await helpers.generateJwtToken(user[0]),
-        user: user[0]
+        user: user[0],
       };
       // According to the result of the "bcrypt.compare", return accordingly.
-      return response ? resp : { message: "Invalid login credentials" };
+      return response ? resp : { message: 'Invalid login credentials' };
     } catch (error) {
-      console.error("LOGIN_ERROR", error);
-      return { message: "Invalid login credentials" };
+      console.error('LOGIN_ERROR', error);
+      return { message: 'Invalid login credentials' };
     }
   }
 
@@ -213,16 +220,16 @@ class User {
         `update users set verified=true where verified='${sha}' returning *`,
         [true, 1111]
       )
-      .then(data => {
+      .then((data) => {
         return data.length === 0
           ? {
-              error: `Your email has not been verified. Either it's verified already or the link you clicked on is broken`
+              error: `Your email has not been verified. Either it's verified already or the link you clicked on is broken`,
             }
-          : { success: "Email has been verified" };
+          : { success: 'Email has been verified' };
       })
-      .catch(error => {
-        console.error("VERIFY_EMAIL_ERROR", error);
-        return { error: "An error occured" };
+      .catch((error) => {
+        console.error('VERIFY_EMAIL_ERROR', error);
+        return { error: 'An error occured' };
       });
   }
 }

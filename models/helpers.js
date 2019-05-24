@@ -118,13 +118,16 @@ async function mailer(receiver_email, user_name, secret_sha = '') {
     generateTextFromHTML: true,
     html: mailContent,
   };
-
-  smtpTransport.sendMail(mailOptions, (error, response) => {
-    error
-      ? console.error('EMAIL_SEND_ERROR', error)
-      : console.log('EMAIL_SEND_SUCCESS', response);
-    smtpTransport.close();
-  });
+  if (process.env.NODE_ENV !== 'testing') {
+    smtpTransport.sendMail(mailOptions, (error, response) => {
+      error
+        ? console.error('EMAIL_SEND_ERROR', error)
+        : console.log('EMAIL_SEND_SUCCESS', response);
+      smtpTransport.close();
+    });
+  } else {
+    console.log('NODE_ENV is __TESTING__: The email was sent successfully');
+  }
 }
 
 module.exports = {
