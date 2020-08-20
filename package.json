@@ -10,7 +10,7 @@
     "heroku-postbuild": "db-migrate reset && db-migrate up"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "cookie-parser": "~1.4.3",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.4.0",
